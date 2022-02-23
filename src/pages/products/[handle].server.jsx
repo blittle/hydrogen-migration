@@ -1,4 +1,4 @@
-import {useShopQuery, ProductProviderFragment} from '@shopify/hydrogen';
+import {useShopQuery, ProductProviderFragment, Seo} from '@shopify/hydrogen';
 import gql from 'graphql-tag';
 
 import ProductDetails from '../../components/ProductDetails.client';
@@ -22,6 +22,7 @@ export default function Product({country = {isoCode: 'US'}, params}) {
 
   return (
     <Layout>
+      <Seo type="product" data={data.product} />
       <ProductDetails product={data.product} />
     </Layout>
   );
@@ -42,17 +43,17 @@ const QUERY = gql`
   ) @inContext(country: $country) {
     product: product(handle: $handle) {
       id
+      description
       vendor
       seo {
         title
         description
       }
-      images(first: 1) {
-        edges {
-          node {
-            url
-          }
-        }
+      featuredImage {
+        url
+        height
+        width
+        altText
       }
       ...ProductProviderFragment
     }
