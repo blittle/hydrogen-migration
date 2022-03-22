@@ -1,5 +1,4 @@
 import {useShopQuery, flattenConnection} from '@shopify/hydrogen';
-import {ProductProviderFragment} from '@shopify/hydrogen/fragments';
 import gql from 'graphql-tag';
 
 import Layout from './Layout.server';
@@ -69,25 +68,40 @@ export default function NotFound({country = {isoCode: 'US'}, response}) {
 }
 
 const QUERY = gql`
-  query NotFoundProductDetails(
-    $country: CountryCode
-    $includeReferenceMetafieldDetails: Boolean = false
-    $numProductMetafields: Int!
-    $numProductVariants: Int!
-    $numProductMedia: Int!
-    $numProductVariantMetafields: Int!
-    $numProductVariantSellingPlanAllocations: Int!
-    $numProductSellingPlanGroups: Int!
-    $numProductSellingPlans: Int!
-  ) @inContext(country: $country) {
+  query NotFoundProductDetails($country: CountryCode)
+  @inContext(country: $country) {
     products(first: 3) {
       edges {
         node {
-          ...ProductProviderFragment
+          handle
+          id
+          title
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                image {
+                  id
+                  url
+                  altText
+                  width
+                  height
+                }
+                priceV2 {
+                  currencyCode
+                  amount
+                }
+                compareAtPriceV2 {
+                  currencyCode
+                  amount
+                }
+              }
+            }
+          }
         }
       }
     }
   }
-
-  ${ProductProviderFragment}
 `;
